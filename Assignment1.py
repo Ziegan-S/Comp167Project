@@ -1,3 +1,4 @@
+
 #3/23/25 Sage Snead Comp 267 Professor Leflore
 #I am creating a program that communicates with a MySQL database of users and roles to authorize a client to log into a python program.
 
@@ -118,6 +119,7 @@ class App:
                 class_id = str(class_id_entry.get())
                 student_id = int(student_id_entry.get())
                 user.mgr_add_to_roster(cursor, class_id, student_id)
+                connection.commit()
             except ValueError:
                 messagebox.showerror("Invalid Input", "Please enter a valid Code or ID")
 
@@ -140,6 +142,7 @@ class App:
                 class_id = str(class_id_entry.get())
                 student_id = int(student_id_entry.get())
                 user.mgr_drop_from_roster(cursor, class_id, student_id)
+                connection.commit()
             except ValueError:
                 messagebox.showerror("Invalid Input", "Please enter a valid Code or ID")
 
@@ -174,10 +177,10 @@ class App:
                 password = str(password_entry.get())
                 fname = str(fname_entry.get())
                 lname = str(lname_entry.get())
-                # for m in Majors.major_list:
-                #     if student_major_entry == m.id:
-                #         student_major = m
-                # user.mgr_add_student(cursor, username, password, fname, lname, student_major)
+                student_major = str(student_major_entry.get())
+                user.mgr_add_student(cursor, username, password, fname, lname, student_major)
+                user.add_student_to_user_list(cursor, fname, lname, student_major)
+                connection.commit()
                 print(f'{fname} {lname} ADDED')
             except ValueError:
                 messagebox.showerror("Invalid Input", "Please retry")
@@ -190,7 +193,25 @@ class App:
         tk.Label(self.root, text="Student Menu", font=("Arial", 14)).pack(pady=10)
 
         tk.Button(self.root, text="View My Classes", command=lambda: user.view_classes(cursor)).pack(pady=5)
+        tk.Button(self.root, text="Drop a Class", command=lambda: self.drop_class(user)).pack(pady=5)
         tk.Button(self.root, text="Logout", command=self.restart).pack(pady=20)
+
+    def drop_class(self, user):
+        self.clear_window()
+        tk.Label(self.root, text="Enter Class to Drop:", font=("Arial", 14)).pack(pady=10)
+        class_id_entry = tk.Entry(self.root)
+        class_id_entry.pack(pady=5)
+
+        def submit_class_drop():
+            try:
+                class_id = str(class_id_entry.get())
+                user.drop_class(cursor, class_id)
+                connection.commit()
+            except ValueError:
+                messagebox.showerror("Invalid Input", "Please enter a valid Code")
+
+        tk.Button(self.root, text="Submit", command=submit_class_drop).pack(pady=10)
+        tk.Button(self.root, text="Back", command=lambda: self.show_manager_menu(user)).pack(pady=5)
 
     def clear_window(self):
         for widget in self.root.winfo_children():
@@ -351,14 +372,3 @@ if __name__ == "__main__":
 #     else:
 #         # print("Connection Successful!!")
 #         connection.close()
-
-
-
-
-
-
-
-
-
-
-
