@@ -18,7 +18,7 @@ class App:
     def __init__(self, root):
         self.root = root
         self.root.title("User Login")
-        self.root.geometry("300x200")
+        self.root.geometry("300x325")
         self.number_of_attempts = 1
 
         tk.Label(root, text="Username").pack(pady=(10, 0))
@@ -57,10 +57,133 @@ class App:
         self.clear_window()
         tk.Label(self.root, text="Manager Menu", font=("Arial", 14)).pack(pady=10)
 
-        tk.Button(self.root, text="View All Students", command=user.mgr_view_all_students).pack(pady=5)
-        tk.Button(self.root, text="View All Classes", command=user.mgr_view_all_classes).pack(pady=5)
-        tk.Button(self.root, text="View All Majors", command=user.mgr_view_all_majors).pack(pady=5)
+        tk.Button(self.root, text="View Student", command=lambda: self.view_student(user)).pack(pady=5)
+        tk.Button(self.root, text="View Roster", command=lambda: self.view_roster(user)).pack(pady=5)
+        tk.Button(self.root, text="Add Student to Roster", command=lambda: self.add_student(user)).pack(pady=5)
+        tk.Button(self.root, text="Drop Student from Roster", command=lambda: self.drop_student(user)).pack(pady=5)
+        tk.Button(self.root, text="Add Student", command=lambda: self.new_student(user)).pack(pady=5)
+
+        # tk.Button(self.root, text="View All Students", command=user.mgr_view_all_students).pack(pady=5)
+        # tk.Button(self.root, text="View All Classes", command=user.mgr_view_all_classes).pack(pady=5)
+        # tk.Button(self.root, text="View All Majors", command=user.mgr_view_all_majors).pack(pady=5)
         tk.Button(self.root, text="Logout", command=self.restart).pack(pady=20)
+
+    def view_student(self, user):
+        self.clear_window()
+        tk.Label(self.root, text="Enter Student ID:", font=("Arial", 14)).pack(pady=10)
+
+        student_id_entry = tk.Entry(self.root)
+        student_id_entry.pack(pady=5)
+
+        def submit_student_id():
+            try:
+                student_id = int(student_id_entry.get())
+                user.mgr_view_classes(cursor, student_id)
+            except ValueError:
+                messagebox.showerror("Invalid Input", "Please enter a valid numeric Student ID")
+
+        tk.Button(self.root, text="Submit", command=submit_student_id).pack(pady=10)
+        tk.Button(self.root, text="Back", command=lambda: self.show_manager_menu(user)).pack(pady=5)
+
+    def view_roster(self, user):
+        self.clear_window()
+        tk.Label(self.root, text="Enter Class Code:", font=("Arial", 14)).pack(pady=10)
+
+        class_id_entry = tk.Entry(self.root)
+        class_id_entry.pack(pady=5)
+
+        def submit_roster_id():
+            try:
+                class_id = str(class_id_entry.get())
+                user.mgr_view_roster(cursor, class_id)
+            except ValueError:
+                messagebox.showerror("Invalid Input", "Please enter a valid numeric Roster ID")
+
+        tk.Button(self.root, text="Submit", command=submit_roster_id).pack(pady=10)
+        tk.Button(self.root, text="Back", command=lambda: self.show_manager_menu(user)).pack(pady=5)
+
+    def add_student(self, user):
+        self.clear_window()
+        tk.Label(self.root, text="Enter Class Code:", font=("Arial", 14)).pack(pady=10)
+        class_id_entry = tk.Entry(self.root)
+        class_id_entry.pack(pady=5)
+
+        tk.Label(self.root, text="Enter Student ID:", font=("Arial", 14)).pack(pady=10)
+        student_id_entry = tk.Entry(self.root)
+        student_id_entry.pack(pady=5)
+
+
+        def submit_student_add():
+            try:
+                class_id = str(class_id_entry.get())
+                student_id = int(student_id_entry.get())
+                user.mgr_add_to_roster(cursor, class_id, student_id)
+            except ValueError:
+                messagebox.showerror("Invalid Input", "Please enter a valid Code or ID")
+
+        tk.Button(self.root, text="Submit", command=submit_student_add).pack(pady=10)
+        tk.Button(self.root, text="Back", command=lambda: self.show_manager_menu(user)).pack(pady=5)
+
+    def drop_student(self, user):
+        self.clear_window()
+        tk.Label(self.root, text="Enter Class Code:", font=("Arial", 14)).pack(pady=10)
+        class_id_entry = tk.Entry(self.root)
+        class_id_entry.pack(pady=5)
+
+        tk.Label(self.root, text="Enter Student ID:", font=("Arial", 14)).pack(pady=10)
+        student_id_entry = tk.Entry(self.root)
+        student_id_entry.pack(pady=5)
+
+
+        def submit_student_drop():
+            try:
+                class_id = str(class_id_entry.get())
+                student_id = int(student_id_entry.get())
+                user.mgr_drop_from_roster(cursor, class_id, student_id)
+            except ValueError:
+                messagebox.showerror("Invalid Input", "Please enter a valid Code or ID")
+
+        tk.Button(self.root, text="Submit", command=submit_student_drop).pack(pady=10)
+        tk.Button(self.root, text="Back", command=lambda: self.show_manager_menu(user)).pack(pady=5)
+
+    def new_student(self, user):
+        self.clear_window()
+        tk.Label(self.root, text="Enter Username:", font=("Arial", 14)).pack(pady=10)
+        username_entry = tk.Entry(self.root)
+        username_entry.pack(pady=5)
+
+        tk.Label(self.root, text="Enter Password:", font=("Arial", 14)).pack(pady=10)
+        password_entry = tk.Entry(self.root)
+        password_entry.pack(pady=5)
+
+        tk.Label(self.root, text="Enter First Name:", font=("Arial", 14)).pack(pady=10)
+        fname_entry = tk.Entry(self.root)
+        fname_entry.pack(pady=5)
+
+        tk.Label(self.root, text="Enter Last Name:", font=("Arial", 14)).pack(pady=10)
+        lname_entry = tk.Entry(self.root)
+        lname_entry.pack(pady=5)
+
+        tk.Label(self.root, text="Enter Student Major:", font=("Arial", 14)).pack(pady=10)
+        student_major_entry = tk.Entry(self.root)
+        student_major_entry.pack(pady=5)
+
+        def submit_student_new():
+            try:
+                username = str(username_entry.get())
+                password = str(password_entry.get())
+                fname = str(fname_entry.get())
+                lname = str(lname_entry.get())
+                # for m in Majors.major_list:
+                #     if student_major_entry == m.id:
+                #         student_major = m
+                # user.mgr_add_student(cursor, username, password, fname, lname, student_major)
+                print(f'{fname} {lname} ADDED')
+            except ValueError:
+                messagebox.showerror("Invalid Input", "Please retry")
+
+        tk.Button(self.root, text="Submit", command=submit_student_new).pack(pady=10)
+        tk.Button(self.root, text="Back", command=lambda: self.show_manager_menu(user)).pack(pady=5)
 
     def show_student_menu(self, user):
         self.clear_window()
