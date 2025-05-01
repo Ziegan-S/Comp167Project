@@ -211,7 +211,7 @@ class App:
                 messagebox.showerror("Invalid Input", "Please enter a valid Code")
 
         tk.Button(self.root, text="Submit", command=submit_class_drop).pack(pady=10)
-        tk.Button(self.root, text="Back", command=lambda: self.show_manager_menu(user)).pack(pady=5)
+        tk.Button(self.root, text="Back", command=lambda: self.show_student_menu(user)).pack(pady=5)
 
     def clear_window(self):
         for widget in self.root.winfo_children():
